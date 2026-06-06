@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# CareerPrep — AI
 
-## Getting Started
+An AI-powered job preparation tool that analyses your CV against a job description, scores your fit, identifies gaps, and generates a tailored preparation package to help you walk into interviews more prepared.
 
-First, run the development server:
+Built with Next.js and the Claude API. No account required — upload, analyse, prepare.
+
+---
+
+## What it does
+
+**1. Fit Score**
+Upload your CV and a job description (paste or file). CareerPrep scores your fit across four dimensions — mandatory skills, experience level, domain fit, and project relevance — and returns an honest score out of 100 with a breakdown and notes.
+
+**2. Gap Analysis**
+Identifies specific gaps between your profile and the role, each tagged by severity (High / Medium / Low). No generic feedback — gaps are grounded in the actual JD requirements.
+
+**3. Preparation Package**
+
+| Output | What it contains |
+|---|---|
+| **Project Charter** | PM-style application brief — fit assessment, risks & mitigations, likely interview scenarios, company snapshot, success metrics |
+| **Training Materials** | Curated learning resources per gap — free and low-cost, with time estimates and direct links |
+| **CV Rewrite** | Your CV rewritten to match JD language, with a change log of what was changed and why. Download as `.docx` |
+
+---
+
+## Tech stack
+
+- **Framework:** Next.js 16 (App Router)
+- **AI:** Anthropic Claude API (`claude-sonnet-4-6`) — structured JSON output, prompt-engineered rubric scoring
+- **File parsing:** `unpdf` (PDF), `mammoth` (DOCX)
+- **Document generation:** `docx` (client-side DOCX export)
+- **Deployment:** Vercel
+- **Styling:** Inline styles with a custom dark/light token system
+
+---
+
+## How it works
+
+```
+User uploads JD + CV
+        ↓
+/api/analyse — Claude scores fit using a rubric, returns score + gaps + strengths
+        ↓
+Results page — accordion UI, gap severity pills, score breakdown
+        ↓
+User generates outputs (independently):
+  /api/charter   → Project Charter JSON → rendered in drawer
+  /api/training  → Training Materials JSON → rendered in drawer
+  /api/cvrewrite → Rewritten CV JSON → rendered in drawer + .docx download
+```
+
+Each API route is a standalone Claude call. No agent loop, no vector database — structured prompt engineering with JSON schema constraints.
+
+---
+
+## What I learned building this
+
+I came into this project as a PM with no prior coding experience. I used Cursor as my IDE and Claude as a coding collaborator throughout.
+
+**Product decisions that shaped the build:**
+- Rubric-based scoring (not vibes-based) — configurable weights per dimension so the scoring is auditable and consistent
+- 60-point threshold for "low fit" — forces honest signal rather than always showing green
+- Structured JSON output for every Claude call — makes the UI deterministic and the outputs parseable
+- Client-side DOCX generation — avoids server-side file handling, keeps the architecture simple
+- Session-only state (no database) — right call for MVP; reduces attack surface and infrastructure cost
+
+**Technical concepts encountered for the first time:**
+- LLM-as-judge pattern for rubric-grounded evaluation
+- Prompt engineering for structured output (JSON schema constraints, field-level length caps)
+- Tool use vs knowledge-based generation tradeoffs (training materials currently use model knowledge — web search via tool use is a planned improvement)
+- Next.js App Router, API routes, FormData handling
+- Client-side file parsing (PDF + DOCX) and text extraction limitations
+- CSS grid row animation for accordion transitions
+
+---
+
+## Running locally
+
+**Prerequisites:** Node.js 18+, an Anthropic API key
+
+```bash
+git clone https://github.com/shwetaguptagit/careerprep-ai
+cd careerprep-ai
+npm install
+```
+
+Create a `.env.local` file in the root:
+
+```
+ANTHROPIC_API_KEY=your_api_key_here
+```
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Planned improvements
 
-## Learn More
+- [ ] Web search tool use for Training Materials (real-time resource verification)
+- [ ] Google Docs export for Charter and Training Materials
+- [ ] Supabase integration — persist analysis history across sessions
+- [ ] Eval framework for scoring accuracy validation
+- [ ] PostHog analytics — funnel tracking from upload to output generation
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project context
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Built as a hands-on AI PM portfolio project to demonstrate end-to-end product thinking, API integration, and shipped software — not just specs and decks.
 
-## Deploy on Vercel
+**Author:** Shweta Gupta — Senior PM with 12 years across consumer revenue, media, e-commerce, and AI. Currently building at the intersection of product and AI.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[LinkedIn](https://www.linkedin.com/in/shweta-gupta-5619b555/) · [GitHub](https://github.com/shwetaguptagit)
