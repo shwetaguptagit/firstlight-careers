@@ -33,7 +33,7 @@ ${jobDescription.slice(0, 3000)}
 
 ---
 
-Recommend specific learning resources for each gap. Return ONLY valid JSON, no markdown, no backticks, no preamble.
+Recommend specific learning resources for each gap. CRITICAL: Your entire response must be a single JSON object. No explanation before it. No summary after it. No markdown. Start your response with { and end with }. Nothing else.
 
 Schema:
 {
@@ -89,7 +89,23 @@ Rules:
     });
 
     const raw = response.content[0]?.text ?? '';
-    const clean = raw.replace(/```json|```/g, '').trim();
+
+    if (!raw.trim()) {
+      console.error('Training route: empty response from API');
+      return Response.json({
+        error: 'No response generated. Please try again.'
+      }, { status: 422 });
+    }
+
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error('Training route: no JSON object found in response — tail:', raw.slice(-300));
+      return Response.json({
+        error: 'Response format error. Please try again.'
+      }, { status: 422 });
+    }
+
+    const clean = jsonMatch[0];
 
     let training;
     try {
@@ -102,8 +118,30 @@ Rules:
     }
 
     return Response.json({ training });
+
   } catch (err) {
     console.error('Training route error:', err);
-    return Response.json({ error: 'Failed to generate Training Materials.' }, { status: 500 });
+
+    if (err.status === 403) {
+      return Response.json({
+        error: 'API permission error. Check your Anthropic account settings.'
+      }, { status: 403 });
+    }
+
+    if (err.status === 401) {
+      return Response.json({
+        error: 'API authentication failed. Check your ANTHROPIC_API_KEY.'
+      }, { status: 401 });
+    }
+
+    if (err.status === 429) {
+      return Response.json({
+        error: 'Rate limit hit. Please wait a moment and try again.'
+      }, { status: 429 });
+    }
+
+    return Response.json({
+      error: 'Failed to generate Training Materials. Please try again.'
+    }, { status: 500 });
   }
 }

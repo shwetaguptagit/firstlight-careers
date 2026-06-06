@@ -13,15 +13,16 @@ async function extractFileText(file) {
 
   if (fileName.endsWith('.pdf')) {
     const { text: pdfText } = await extractText(new Uint8Array(buffer));
-return Array.isArray(pdfText) ? pdfText.join(' ').trim() : pdfText.trim();
+    return Array.isArray(pdfText) ? pdfText.join(' ').trim() : pdfText.trim();
   } else if (fileName.endsWith('.docx')) {
     const result = await mammoth.extractRawText({ buffer });
     return result.value.trim();
+  } else if (fileName.endsWith('.txt')) {
+    return buffer.toString('utf-8').trim();
   } else {
     throw new Error('Unsupported file format.');
   }
 }
-
 // --- scoring rubric ---
 
 const RUBRIC = `
