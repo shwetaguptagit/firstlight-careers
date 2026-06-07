@@ -77,7 +77,7 @@ export default function Results() {
   const [data, setData]         = useState(null);
   const [jd, setJd]             = useState('');
   const [cvText, setCvText]     = useState('');
-  const [isDark, setIsDark]     = useState(true);
+  const [isDark, setIsDark]     = useState(false);
   const [themeOverride, setThemeOverride] = useState(null);
 
   const [charter, setCharter]           = useState(null);
@@ -93,12 +93,9 @@ export default function Results() {
   const [drawer, setDrawer] = useState(null); // 'charter' | 'training' | 'cvrewrite' | null
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    if (themeOverride === null) setIsDark(mq.matches);
-    const h = (e) => { if (themeOverride === null) setIsDark(e.matches); };
-    mq.addEventListener('change', h);
-    return () => mq.removeEventListener('change', h);
-  }, [themeOverride]);
+    const saved = sessionStorage.getItem('theme');
+    if (saved) setIsDark(saved === 'dark');
+  }, []);
 
   useEffect(() => {
     const raw = sessionStorage.getItem('analysisResult');
@@ -121,7 +118,9 @@ export default function Results() {
   if (!data) return null;
 
   function toggleTheme() {
-    const next = !isDark; setIsDark(next); setThemeOverride(next ? 'dark' : 'light');
+    const next = !isDark;
+    setIsDark(next);
+    sessionStorage.setItem('theme', next ? 'dark' : 'light');
   }
   function toggleSection(key) {
     setOpenSections(p => ({ ...p, [key]: !p[key] }));

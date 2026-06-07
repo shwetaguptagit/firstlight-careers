@@ -32,6 +32,7 @@ Identifies specific gaps between your profile and the role, each tagged by sever
 - **Document generation:** `docx` (client-side DOCX export)
 - **Deployment:** Vercel
 - **Styling:** Inline styles with a custom dark/light token system
+- **MCP server:** Self-hosted at `/api/mcp` — exposes all four tools via Model Context Protocol for use in Claude.ai and other MCP-compatible clients
 
 ---
 
@@ -51,6 +52,8 @@ User generates outputs (independently):
 ```
 
 Each API route is a standalone Claude call. No agent loop, no vector database — structured prompt engineering with JSON schema constraints.
+
+**MCP server** — all four routes are also exposed as tools via `/api/mcp`, following the Model Context Protocol. Claude.ai and other MCP-compatible clients can call `analyse_fit`, `generate_charter`, `generate_training`, and `generate_cvrewrite` directly without the web UI.
 
 ---
 
@@ -72,6 +75,7 @@ I came into this project as a PM with no prior coding experience. I used Cursor 
 - Next.js App Router, API routes, FormData handling
 - Client-side file parsing (PDF + DOCX) and text extraction limitations
 - CSS grid row animation for accordion transitions
+- MCP (Model Context Protocol) — exposing existing API routes as AI-callable tools, JSON-RPC 2.0 protocol handling, query param auth fallback for Claude.ai connector compatibility
 
 ---
 
@@ -89,6 +93,7 @@ Create a `.env.local` file in the root:
 
 ```
 ANTHROPIC_API_KEY=your_api_key_here
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 ```bash
@@ -102,7 +107,7 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Planned improvements
 
 - [ ] Web search tool use for Training Materials (real-time resource verification)
-- [ ] Google Docs export for Charter and Training Materials
+- [ ] Google Docs export for Charter and Training Materials (MCP Phase 2)
 - [ ] Supabase integration — persist analysis history across sessions
 - [ ] Eval framework for scoring accuracy validation
 - [ ] PostHog analytics — funnel tracking from upload to output generation

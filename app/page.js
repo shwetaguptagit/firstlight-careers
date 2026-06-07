@@ -48,7 +48,7 @@ function MoonIcon({ color }) {
 export default function Home() {
   const router = useRouter();
 
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
   const [themeOverride, setThemeOverride] = useState(null);
   const [jdMode, setJdMode] = useState('text');
   const [jdText, setJdText] = useState('');
@@ -62,17 +62,14 @@ export default function Home() {
   const cvFileRef = useRef(null);
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    if (themeOverride === null) setIsDark(mq.matches);
-    const handler = (e) => { if (themeOverride === null) setIsDark(e.matches); };
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, [themeOverride]);
+    const saved = sessionStorage.getItem('theme');
+    if (saved) setIsDark(saved === 'dark');
+  }, []);
 
   function toggleTheme() {
     const next = !isDark;
     setIsDark(next);
-    setThemeOverride(next ? 'dark' : 'light');
+    sessionStorage.setItem('theme', next ? 'dark' : 'light');
   }
 
   const c = isDark ? {
