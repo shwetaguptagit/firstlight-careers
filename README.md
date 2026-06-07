@@ -1,4 +1,6 @@
-# CareerPrep — AI
+# FirstLight Careers
+
+See your fit clearly. Walk in ready.
 
 An AI-powered job preparation tool that analyses your CV against a job description, scores your fit, identifies gaps, and generates a tailored preparation package to help you walk into interviews more prepared.
 
@@ -9,7 +11,7 @@ Built with Next.js and the Claude API. No account required — upload, analyse, 
 ## What it does
 
 **1. Fit Score**
-Upload your CV and a job description (paste or file). CareerPrep scores your fit across four dimensions — mandatory skills, experience level, domain fit, and project relevance — and returns an honest score out of 100 with a breakdown and notes.
+Upload your CV and a job description (paste or file). FirstLight Careers scores your fit across four dimensions — mandatory skills, experience level, domain fit, and project relevance — and returns an honest score out of 100 with a breakdown and notes.
 
 **2. Gap Analysis**
 Identifies specific gaps between your profile and the role, each tagged by severity (High / Medium / Low). No generic feedback — gaps are grounded in the actual JD requirements.
@@ -84,8 +86,8 @@ I came into this project as a PM with no prior coding experience. I used Cursor 
 **Prerequisites:** Node.js 18+, an Anthropic API key
 
 ```bash
-git clone https://github.com/shwetaguptagit/careerprep-ai
-cd careerprep-ai
+git clone https://github.com/shwetaguptagit/firstlight-careers
+cd firstlight-careers
 npm install
 ```
 
