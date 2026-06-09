@@ -48,7 +48,10 @@ function MoonIcon({ color }) {
 export default function Home() {
   const router = useRouter();
   const isSubmitting = useRef(false);
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return sessionStorage.getItem('theme') === 'dark';
+  });
   const [themeOverride, setThemeOverride] = useState(null);
   const [jdMode, setJdMode] = useState('text');
   const [jdText, setJdText] = useState('');
@@ -60,11 +63,6 @@ export default function Home() {
 
   const jdFileRef = useRef(null);
   const cvFileRef = useRef(null);
-
-  useEffect(() => {
-    const saved = sessionStorage.getItem('theme');
-    if (saved) setIsDark(saved === 'dark');
-  }, []);
 
   function toggleTheme() {
     const next = !isDark;
